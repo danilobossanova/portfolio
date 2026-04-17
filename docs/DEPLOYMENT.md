@@ -1,143 +1,134 @@
 # Deployment — Cloudflare Pages
 
-Runbook para publicar o portfólio em produção via GitHub Actions + Cloudflare Pages.
-
-Ambiente alvo: **https://danilofernando.dev** (DNS registrado na Cloudflare).
+Runbook para publicar o portfólio em **https://danilofernando.dev**.
 
 ---
 
-## 1. Visão geral do pipeline
+## 1. Arquitetura do pipeline
 
 ```
-push/PR → main/develop ──► CI (lint + test + build)
-                           CodeQL (SAST)
-                           Dependency Review (PR only)
+                     GitHub                          Cloudflare
+                     ──────                          ──────────
 
-push → main             ──► Deploy workflow
-                            ├─ npm ci
-                            ├─ npm run generate (NUXT_PUBLIC_SITE_URL = prod)
-                            └─ wrangler pages deploy .output/public
+push → main/develop ─► CI workflow                   Git webhook ─► Pages build
+                       (lint + test + build)                        (npm run generate)
+                       CodeQL (SAST)                                .output/public
+                       Dependency Review                            ↓
+                       Dependabot                                   danilofernando.dev
 ```
 
+- **Build e deploy** são responsabilidade da Cloudflare, disparados pelo webhook
+  do GitHub. O projeto Pages lê `npm run generate`, publica `.output/public/` e
+  aplica custom domain + TLS automaticamente.
+- **GitHub Actions** cuida só das garantias de qualidade: lint, type-check,
+  testes, análise estática (CodeQL), revisão de dependências (dependency-review,
+  Dependabot). Não faz deploy.
 - **Branch `main`** → produção (`danilofernando.dev`).
-- **Branch `develop`** → integração (sem deploy automático por enquanto).
-- **Branches `feature/*`** → PRs contra `develop`.
+- **Branch `develop`** e **`feature/*`** → preview deploys automáticos em URLs
+  únicos `*.danilofernando-dev.pages.dev` (uma per commit).
 
 ---
 
-## 2. Pré-requisitos no Cloudflare
+## 2. Configuração do projeto na Cloudflare
 
-### 2.1 Criar o projeto Pages
+### 2.1 Build settings
 
-1. Dashboard Cloudflare → **Workers & Pages → Create application → Pages → Direct Upload**.
-   - Nome do projeto: **`danilofernando-dev`** (precisa bater com o `--project-name` em `.github/workflows/deploy.yml`).
-   - Faça um primeiro upload vazio ou deixe o deploy do GitHub Action criar o primeiro build.
-2. **NÃO** conecte o repositório via "Git Integration" da Cloudflare — nosso CI/CD fica no GitHub, a Cloudflare só recebe o artefato via Wrangler.
+Em **Workers & Pages → `danilofernando-dev` → Settings → Builds & deployments**:
 
-### 2.2 Gerar o API Token
+| Campo | Valor |
+| --- | --- |
+| Framework preset | Nuxt.js |
+| Build command | `npm run generate` |
+| Build output directory | `.output/public` |
+| Root directory | *(vazio)* |
+| Production branch | `main` |
+| Preview branches | "All non-production branches" |
 
-1. **My Profile → API Tokens → Create Token → Custom Token**.
-2. Permissões **mínimas**:
-   - `Account` → `Cloudflare Pages` → **Edit**
-   - `User` → `User Details` → **Read** (o Wrangler valida a identidade)
-3. Account resources: restrinja à conta específica do domínio.
-4. TTL: opcional (recomendado rotacionar a cada 90 dias).
-5. Copie o token — ele só é mostrado uma vez.
+### 2.2 Environment variables
 
-### 2.3 Descobrir o Account ID
+Definidas em **Settings → Environment variables** (escopo: Production + Preview):
 
-Dashboard → barra lateral direita em qualquer página da conta → **Account ID** (string hex de 32 caracteres).
+| Variável | Valor | Observação |
+| --- | --- | --- |
+| `NODE_VERSION` | `22` | Casa com `.nvmrc` |
+| `NUXT_PUBLIC_SITE_URL` | `https://danilofernando.dev` | Canonical / OG / sitemap |
+| `NUXT_PUBLIC_USE_HTTP_REPOSITORIES` | `false` | Enquanto não há CMS |
 
----
+Nenhum secret precisa ser cadastrado — não há chamada à API Cloudflare feita
+a partir do GitHub.
 
-## 3. Configurar os secrets no GitHub
+### 2.3 Custom domain e SSL/TLS
 
-Em `Settings → Secrets and variables → Actions`:
-
-### Environment `production` (criar se não existir)
-
-- `CLOUDFLARE_API_TOKEN` → token gerado em 2.2
-- `CLOUDFLARE_ACCOUNT_ID` → Account ID de 2.3
-
-Use **Environment secrets**, não repository secrets, para que o deploy exija aprovação manual (opcional) e os secrets nunca vazem para PRs de forks.
-
-### Proteções recomendadas para o environment
-
-- `Required reviewers` → o próprio dono (auto-review é permitido).
-- `Wait timer` → 0 (ou 5 minutos se quiser janela de cancelamento).
-- `Deployment branches` → **Selected branches → `main`** (bloqueia deploy a partir de outras branches).
+1. **Workers & Pages → `danilofernando-dev` → Custom domains → Set up a custom domain**:
+   - `danilofernando.dev` e `www.danilofernando.dev`
+   - Cloudflare detecta o DNS na mesma conta e cria os CNAMEs automaticamente.
+2. Na zona `danilofernando.dev`:
+   - **SSL/TLS → Overview** → **Full (strict)**.
+   - **SSL/TLS → Edge Certificates** → **Always Use HTTPS** = ON.
+   - **SSL/TLS → Edge Certificates** → **Automatic HTTPS Rewrites** = ON.
 
 ---
 
-## 4. Proteger as branches
+## 3. Proteção das branches no GitHub
 
-Em `Settings → Branches → Add classic branch protection rule`:
+Em `Settings → Branches → Add branch protection rule`:
 
 ### Regra para `main`
 
-- ✅ Require a pull request before merging
-  - ✅ Require approvals (1)
-  - ✅ Dismiss stale approvals on new commits
+- ✅ Require a pull request before merging (1 approval)
+- ✅ Dismiss stale approvals on new commits
 - ✅ Require status checks to pass before merging
-  - ✅ Require branches to be up to date
-  - Required checks: `CI / Lint, test and build`, `CodeQL / Analyze (javascript-typescript)`
+  - Required: `CI / Lint, test and build`, `CodeQL / Analyze`, `Dependency Review`
+- ✅ Require branches to be up to date
 - ✅ Require conversation resolution before merging
-- ✅ Require signed commits *(opcional, se GPG estiver configurado)*
 - ✅ Require linear history
 - ✅ Do not allow bypassing the above settings
-- ❌ Allow force pushes
-- ❌ Allow deletions
+- ❌ Allow force pushes / deletions
 
 ### Regra para `develop`
 
-- Similar a `main`, mas com 0 aprovações obrigatórias (trabalho solo).
-- Required checks: `CI / Lint, test and build`, `CodeQL / Analyze`, `Dependency Review`.
+Similar, porém com 0 aprovações obrigatórias (trabalho solo). Preview deploys
+da Cloudflare são gatilho informal de revisão visual.
 
 ---
 
-## 5. Apontar o domínio custom
+## 4. Validação pós-deploy
 
-1. No projeto Pages → **Custom domains → Set up a custom domain**.
-2. Informe `danilofernando.dev` e depois `www.danilofernando.dev`.
-3. Cloudflare detecta o domínio já gerenciado na mesma conta e adiciona os registros `CNAME` automaticamente.
-4. Habilite **Always Use HTTPS** no módulo SSL/TLS do Cloudflare.
-5. SSL/TLS mode → **Full (strict)**.
-6. Habilite **Automatic HTTPS Rewrites**.
+Após o primeiro push em `main`:
 
----
-
-## 6. Validação pós-deploy
-
-Após o primeiro `git push origin main`:
-
-1. Aba **Actions** no GitHub → workflow `Deploy to Cloudflare Pages` deve concluir verde.
-2. Abrir `https://danilofernando.dev` e conferir:
-   - Status 200, TLS válido, redirecionamento de `http://` para `https://`.
-   - Headers de resposta via `curl -I`:
-     ```
-     strict-transport-security: max-age=63072000; includeSubDomains; preload
-     content-security-policy: default-src 'self'; ...
-     x-frame-options: DENY
-     x-content-type-options: nosniff
-     referrer-policy: strict-origin-when-cross-origin
-     permissions-policy: ...
-     ```
-3. Rodar scans externos:
-   - **Mozilla Observatory** — https://observatory.mozilla.org/analyze/danilofernando.dev — meta: nota **A+** (sem inline scripts futuros e fonts self-hosted).
+1. Aba **Deployments** do projeto Pages → build verde.
+2. Abrir `https://danilofernando.dev` — status 200 e redirect `http → https`.
+3. Validar response headers com `curl -I`:
+   ```
+   strict-transport-security: max-age=63072000; includeSubDomains; preload
+   content-security-policy: default-src 'self'; ...
+   x-frame-options: DENY
+   x-content-type-options: nosniff
+   referrer-policy: strict-origin-when-cross-origin
+   permissions-policy: ...
+   ```
+4. Auditorias externas:
+   - **Mozilla Observatory** — https://observatory.mozilla.org/analyze/danilofernando.dev — meta: **A+**.
    - **SSL Labs** — https://www.ssllabs.com/ssltest/analyze.html?d=danilofernando.dev — meta: **A**.
    - **securityheaders.com** — meta: **A**.
+   - **PageSpeed Insights** — https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fdanilofernando.dev — meta: Core Web Vitals todos verdes.
 
 ---
 
-## 7. Rollback
+## 5. Rollback
 
-- Deploy prévio continua imutável em `.output/public/` no artefato do Actions (retenção 7 dias).
-- Via dashboard: **Pages → danilofernando-dev → Deployments** → reverter para um deploy anterior com um clique.
-- Via Git: `git revert <sha>` em `main` dispara um novo deploy corrigido.
+No dashboard da Cloudflare Pages:
+
+- **Deployments** lista todos os builds anteriores. Clicar em `...` de um build
+  saudável → **Rollback to this deployment** — ação em 1 clique, TLS/DNS
+  preservados.
+
+Via Git: `git revert <sha>` em `main` + push dispara um novo build Pages
+corrigido.
 
 ---
 
-## 8. Operações comuns
+## 6. Operações comuns
 
 ### Abrir uma nova feature
 
@@ -150,32 +141,30 @@ git push -u origin feature/<nome-curto>
 gh pr create --base develop
 ```
 
+A Cloudflare publica um preview deploy automaticamente; o link aparece
+como comentário no PR (via app Cloudflare Pages).
+
 ### Publicar uma release
 
 ```bash
-git checkout develop
-git pull --rebase
+git checkout develop && git pull --rebase
 git checkout main
 git merge --no-ff develop -m "chore(release): vX.Y.Z"
 git tag -a vX.Y.Z -m "Release X.Y.Z"
 git push origin main develop --follow-tags
 ```
 
-O push em `main` dispara o deploy. A tag serve de ponto de restauração.
-
-### Rotacionar o API Token
-
-1. Gerar novo token no Cloudflare (seção 2.2).
-2. Atualizar o secret `CLOUDFLARE_API_TOKEN` no environment `production`.
-3. Revogar o token antigo no dashboard.
+O push em `main` dispara o deploy de produção. A tag serve de âncora para
+rollback rápido via Git.
 
 ---
 
-## 9. Checklist de segurança contínua
+## 7. Checklist de segurança contínua
 
-- [ ] Dependabot abre PRs semanais — revisar e mergear no máximo em 7 dias.
-- [ ] CodeQL alerts em `Security → Code scanning` devem ser triados em até 30 dias.
-- [ ] Rotacionar `CLOUDFLARE_API_TOKEN` a cada 90 dias.
-- [ ] Revisar `public/_headers` sempre que adicionar novas origens (fontes, analytics, API).
+- [ ] Dependabot abre PRs semanais — revisar e mergear em até 7 dias.
+- [ ] CodeQL alerts em `Security → Code scanning` triados em até 30 dias.
+- [ ] Revisar `public/_headers` sempre que incluir novas origens (fontes,
+      analytics, API).
 - [ ] Atualizar `public/.well-known/security.txt` (`Expires`) antes de expirar.
-- [ ] Conferir Mozilla Observatory após cada release significativa.
+- [ ] Rodar Mozilla Observatory + PageSpeed após cada release com mudança
+      visível de surface.

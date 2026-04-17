@@ -28,7 +28,10 @@ const { data: profile } = useSiteProfile()
           <img
             :src="profile.manifestoImage"
             :alt="profile.fullName"
+            width="1280"
+            height="720"
             loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover opacity-80"
           />
         </div>
