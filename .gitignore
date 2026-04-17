@@ -34,3 +34,7 @@ CLAUDE.md
 .cursor/
 .aider*
 .continue/
+
+# Wrangler / Cloudflare local cache
+.wrangler/
+.dev.vars
