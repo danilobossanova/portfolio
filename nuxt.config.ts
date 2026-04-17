@@ -24,7 +24,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
-    '@pinia/nuxt',
   ],
 
   css: ['~/assets/css/main.css'],
