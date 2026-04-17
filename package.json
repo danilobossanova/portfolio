@@ -34,6 +34,7 @@
   "devDependencies": {
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/test-utils": "^3.14.4",
+    "@nuxtjs/color-mode": "^4.0.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.9.0",
