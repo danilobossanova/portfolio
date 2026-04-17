@@ -3,7 +3,11 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 const { data: profile } = useSiteProfile()
-const currentYear = new Date().getFullYear()
+
+// Frozen at build via useState so the SSR payload carries the year
+// through hydration — guards against a mismatch when the build and a
+// visit sit on opposite sides of a year boundary.
+const currentYear = useState('copyright-year', () => new Date().getFullYear())
 </script>
 
 <template>

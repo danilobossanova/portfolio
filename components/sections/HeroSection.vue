@@ -41,6 +41,10 @@ const { data: profile } = useSiteProfile()
           v-if="profile?.avatar"
           :src="profile.avatar"
           :alt="profile.fullName"
+          width="800"
+          height="1000"
+          fetchpriority="high"
+          decoding="async"
           class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
         />
       </div>

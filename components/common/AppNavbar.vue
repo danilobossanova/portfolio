@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useDark } from '@vueuse/core'
 import { Menu, X, Sun, Moon, Search } from 'lucide-vue-next'
 import { useI18n, useLocalePath } from '#imports'
 import LocaleSwitcher from './LocaleSwitcher.vue'
@@ -8,11 +7,14 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 const { data: profile } = useSiteProfile()
 
-// Tema: useDark retorna uma WritableComputedRef. Atribuição direta é
-// mais confiável que useToggle() nesse caso (evita um bug conhecido).
-const isDark = useDark()
+// Theme is driven by @nuxtjs/color-mode: it injects a synchronous
+// pre-hydration script that sets html.dark from the stored preference,
+// so SSR output and the client agree on first paint (no FOUC, no
+// hydration mismatch on the theme-dependent class).
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
 const toggleDark = () => {
-  isDark.value = !isDark.value
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
 const isMenuOpen = ref(false)
