@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+
+# Logs
+*.log
+
+# Nuxt
+.nuxt
+.nitro
+.output
+dist
+
+# Env
+.env
+.env.*
+!.env.example
+
+# System
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+
+# Testing
+coverage
+.vitest-cache
+
+# AI / agent tooling — local only, never pushed
+CLAUDE.md
+.claude/
+.omc/
+.cursor/
+.aider*
+.continue/
