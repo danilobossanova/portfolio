@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — declared OUTSIDE of @layer base on purpose.
+ * Tailwind 3's content scanner does not see `dark` as a class (it's added at
+ * runtime by @vueuse useDark()), so putting the `.dark { ... }` block inside
+ * @layer base makes the purge pipeline strip it. Keeping the tokens as raw
+ * global CSS sidesteps the whole thing.
+ */
+:root {
+  --color-background: 248 249 250;
+  --color-surface: 255 255 255;
+  --color-on-surface: 25 28 29;
+  --color-on-surface-variant: 68 71 77;
+  --color-primary: 0 0 0;
+  --color-on-primary: 255 255 255;
+  --color-surface-container: 237 238 239;
+  --color-surface-container-low: 243 244 245;
+  --color-surface-container-high: 231 232 233;
+  --color-surface-container-highest: 225 227 228;
+  --color-surface-container-lowest: 255 255 255;
+  --color-outline-variant: 197 198 205;
+  --color-secondary-container: 218 225 227;
+  --color-on-secondary-container: 93 100 102;
+  --color-primary-container: 13 28 50;
+}
+
+/*
+ * Claude Code-inspired warm dark theme.
+ * Near-black warm gray background, marfim off-white text, terracotta accent.
+ * Avoids cool blues/greens that were fighting the editorial serif headlines.
+ */
+html.dark {
+  --color-background: 23 23 23; /* #171717 — near-black warm */
+  --color-surface: 28 28 28; /* #1c1c1c */
+  --color-on-surface: 235 230 220; /* #ebe6dc — warm off-white */
+  --color-on-surface-variant: 163 158 147; /* #a39e93 — muted warm gray */
+  --color-surface-container: 38 36 34; /* #262422 */
+  --color-surface-container-low: 30 28 26; /* #1e1c1a */
+  --color-surface-container-high: 48 45 42; /* #302d2a */
+  --color-surface-container-highest: 58 54 50; /* #3a3632 */
+  --color-surface-container-lowest: 23 23 23; /* #171717 — same as bg, sits flat */
+  --color-primary: 217 119 87; /* #d97757 — Claude terracotta */
+  --color-on-primary: 23 23 23; /* #171717 */
+  --color-outline-variant: 68 64 60; /* #44403c — warm gray border */
+  --color-secondary-container: 48 42 38; /* #302a26 */
+  --color-on-secondary-container: 194 186 174; /* #c2baae */
+  --color-primary-container: 217 119 87; /* #d97757 */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-on-surface font-body antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-outline-variant/40 rounded-full hover:bg-outline-variant/70 transition-colors;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary rounded-sm;
+  }
+}
+
+@layer utilities {
+  .editorial-shadow {
+    box-shadow: 0 20px 40px rgb(10 25 47 / 0.04);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .skip-link {
+    @apply absolute left-4 top-4 -translate-y-20 focus:translate-y-0 bg-primary text-on-primary px-4 py-2 rounded-sm z-[100] transition-transform;
+  }
+}
+
+/* ==========================================================================
+   Markdown body — editorial typography used by <MarkdownRenderer />
+   ========================================================================== */
+.md-body {
+  @apply text-lg leading-relaxed text-on-surface-variant;
+}
+.md-body > * + * {
+  @apply mt-6;
+}
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4 {
+  @apply font-headline text-on-surface font-bold leading-tight mt-12 mb-4 text-balance;
+}
+.md-body h1 {
+  @apply text-4xl md:text-5xl;
+}
+.md-body h2 {
+  @apply text-3xl md:text-4xl;
+}
+.md-body h3 {
+  @apply text-2xl;
+}
+.md-body h4 {
+  @apply text-xl;
+}
+.md-body p {
+  @apply leading-relaxed;
+}
+.md-body strong {
+  @apply text-on-surface font-semibold;
+}
+.md-body em {
+  @apply italic;
+}
+.md-body a {
+  @apply text-on-surface font-medium underline decoration-primary decoration-2 underline-offset-4 hover:decoration-4 transition-all;
+}
+.md-body ul,
+.md-body ol {
+  @apply pl-6 space-y-2;
+}
+.md-body ul {
+  @apply list-disc;
+}
+.md-body ol {
+  @apply list-decimal;
+}
+.md-body li::marker {
+  @apply text-on-surface-variant;
+}
+.md-body li > ul,
+.md-body li > ol {
+  @apply mt-2;
+}
+.md-body blockquote {
+  @apply border-l-4 border-primary pl-6 italic font-headline text-xl text-on-surface;
+}
+.md-body hr {
+  @apply border-0 border-t border-outline-variant/40 my-12;
+}
+.md-body code {
+  @apply font-mono text-[0.9em] bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded;
+}
+.md-body pre {
+  @apply bg-surface-container-highest border border-outline-variant/30 rounded-sm p-6 overflow-x-auto text-sm leading-relaxed my-8;
+}
+.md-body pre code {
+  @apply bg-transparent p-0 text-[0.95em];
+}
+.md-body img {
+  @apply w-full rounded-sm border border-outline-variant/20;
+}
+.md-body table {
+  @apply w-full border-collapse text-sm my-8;
+}
+.md-body th,
+.md-body td {
+  @apply border border-outline-variant/40 px-4 py-2 text-left;
+}
+.md-body th {
+  @apply bg-surface-container-high font-semibold text-on-surface;
+}
+
+/* Highlight.js — editorial palette that works in light and dark.
+   Base tokens map into CSS vars so the theme toggles automatically. */
+.hljs {
+  color: rgb(var(--color-on-surface));
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: rgb(var(--color-on-surface-variant));
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-title,
+.hljs-name,
+.hljs-strong {
+  color: rgb(var(--color-primary));
+  font-weight: 600;
+}
+.hljs-string,
+.hljs-attr,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-symbol,
+.hljs-bullet {
+  color: rgb(var(--color-on-surface));
+}
+.hljs-number,
+.hljs-literal,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-params {
+  color: rgb(var(--color-on-secondary-container));
+}
+.hljs-meta,
+.hljs-deletion,
+.hljs-addition,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: rgb(var(--color-on-surface-variant));
+}
