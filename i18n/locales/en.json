@@ -1,0 +1,99 @@
+{
+  "common": {
+    "toggleTheme": "Toggle theme",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "readMore": "Read more",
+    "backToTop": "Back to top",
+    "allRightsReserved": "All rights reserved"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "principles": "Principles",
+    "projects": "Projects",
+    "experience": "Experience",
+    "writing": "Writing",
+    "contact": "Contact",
+    "search": "Search"
+  },
+  "hero": {
+    "ctaProjects": "See projects",
+    "ctaContact": "Get in touch"
+  },
+  "sections": {
+    "about": {
+      "eyebrow": "Manifesto",
+      "title": "Technology with purpose, structure, and accountability."
+    },
+    "principles": {
+      "eyebrow": "Principles",
+      "title": "How I like to build software."
+    },
+    "projects": {
+      "eyebrow": "Case Studies",
+      "title": "Projects focused on problem, solution, and result.",
+      "viewAll": "View all projects",
+      "context": "Context",
+      "solution": "Solution",
+      "result": "Result",
+      "stack": "Stack",
+      "metrics": "Metrics",
+      "backToList": "Back to list",
+      "publishedAt": "Published on"
+    },
+    "experience": {
+      "eyebrow": "Toolset",
+      "title": "Experience built in practice.",
+      "description": "Mastery of the tools that enable scalable, secure solutions."
+    },
+    "attitude": {
+      "eyebrow": "Attitude",
+      "title": "How I operate."
+    },
+    "writing": {
+      "eyebrow": "Writing",
+      "title": "Writing, ideas, and lessons.",
+      "description": "Writing is how I organise technical thinking and share perspective.",
+      "viewAll": "View all articles",
+      "readArticle": "Read article",
+      "readTime": "min read",
+      "backToList": "Back to list",
+      "publishedAt": "Published on",
+      "author": "Author"
+    },
+    "contact": {
+      "eyebrow": "Connection",
+      "title": "Let's talk."
+    }
+  },
+  "pages": {
+    "articles": {
+      "title": "Articles",
+      "subtitle": "Essays, reflections, and technical notes on architecture, engineering and career.",
+      "empty": "No articles found."
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "Case studies with context, technical decisions and measured outcomes.",
+      "empty": "No projects found."
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search by title, tag or content...",
+      "resultsCount": "{count} result found | {count} results found",
+      "empty": "No results for \"{query}\".",
+      "prompt": "Type at least 2 characters to search."
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Reach out to talk about architecture, projects or opportunities."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The content you are looking for does not exist or was moved.",
+      "home": "Back to home"
+    }
+  }
+}

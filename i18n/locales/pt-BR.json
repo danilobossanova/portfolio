@@ -1,0 +1,99 @@
+{
+  "common": {
+    "toggleTheme": "Alternar tema",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "language": "Idioma",
+    "readMore": "Ler mais",
+    "backToTop": "Voltar ao topo",
+    "allRightsReserved": "Todos os direitos reservados"
+  },
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "principles": "Especialidades",
+    "projects": "Projetos",
+    "experience": "Experiência",
+    "writing": "Conteúdo",
+    "contact": "Contato",
+    "search": "Buscar"
+  },
+  "hero": {
+    "ctaProjects": "Ver projetos",
+    "ctaContact": "Falar comigo"
+  },
+  "sections": {
+    "about": {
+      "eyebrow": "Manifesto",
+      "title": "Tecnologia com propósito, estrutura e responsabilidade."
+    },
+    "principles": {
+      "eyebrow": "Princípios",
+      "title": "Como eu gosto de construir software."
+    },
+    "projects": {
+      "eyebrow": "Case Studies",
+      "title": "Projetos e entregas com foco em problema, solução e resultado.",
+      "viewAll": "Ver todos os projetos",
+      "context": "Contexto",
+      "solution": "Solução",
+      "result": "Resultado",
+      "stack": "Stack",
+      "metrics": "Métricas",
+      "backToList": "Voltar para a lista",
+      "publishedAt": "Publicado em"
+    },
+    "experience": {
+      "eyebrow": "Ferramental",
+      "title": "Experiência construída na prática.",
+      "description": "Domínio de ferramentas que possibilitam construir soluções escaláveis e seguras."
+    },
+    "attitude": {
+      "eyebrow": "Atitude",
+      "title": "Forma de atuação."
+    },
+    "writing": {
+      "eyebrow": "Escrita",
+      "title": "Escrita, ideias e aprendizados.",
+      "description": "Escrever é a minha maneira de organizar o pensamento técnico e compartilhar perspectivas.",
+      "viewAll": "Ver todos os artigos",
+      "readArticle": "Ler artigo",
+      "readTime": "min de leitura",
+      "backToList": "Voltar para a lista",
+      "publishedAt": "Publicado em",
+      "author": "Autor"
+    },
+    "contact": {
+      "eyebrow": "Conexão",
+      "title": "Vamos conversar."
+    }
+  },
+  "pages": {
+    "articles": {
+      "title": "Artigos",
+      "subtitle": "Ensaios, reflexões e notas técnicas sobre arquitetura, engenharia e carreira.",
+      "empty": "Nenhum artigo encontrado."
+    },
+    "projects": {
+      "title": "Projetos",
+      "subtitle": "Case studies com contexto, decisões técnicas e resultado medido.",
+      "empty": "Nenhum projeto encontrado."
+    },
+    "search": {
+      "title": "Busca",
+      "placeholder": "Buscar por título, tag ou conteúdo...",
+      "resultsCount": "{count} resultado encontrado | {count} resultados encontrados",
+      "empty": "Nenhum resultado para \"{query}\".",
+      "prompt": "Digite pelo menos 2 caracteres para buscar."
+    },
+    "contact": {
+      "title": "Contato",
+      "subtitle": "Me chame para conversar sobre arquitetura, projetos ou oportunidades."
+    },
+    "notFound": {
+      "title": "Página não encontrada",
+      "description": "O conteúdo que você procura não existe ou foi movido.",
+      "home": "Voltar para o início"
+    }
+  }
+}
