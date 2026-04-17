@@ -24,7 +24,25 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
+    '@nuxt/fonts',
   ],
+
+  fonts: {
+    families: [
+      { name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] },
+      {
+        name: 'Newsreader',
+        provider: 'google',
+        weights: [400, 700],
+        styles: ['normal', 'italic'],
+      },
+    ],
+    defaults: {
+      weights: [400],
+      styles: ['normal'],
+      subsets: ['latin', 'latin-ext'],
+    },
+  },
 
   css: ['~/assets/css/main.css'],
 
@@ -57,15 +75,7 @@ export default defineNuxtConfig({
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
-      link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,700&display=swap',
-        },
-      ],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },
 
