@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { LocaleObject } from '@nuxtjs/i18n'
 import { useI18n, useSwitchLocalePath } from '#imports'
 
 const { locale, locales, t } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const available = computed(() =>
-  (locales.value as Array<{ code: string; name: string }>).filter((l) => l.code !== locale.value),
+  (locales.value as LocaleObject[]).filter((l) => l.code !== locale.value),
 )
 </script>
 

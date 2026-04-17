@@ -13,5 +13,6 @@ const html = computed(() => render(props.source))
     trusted repository data. markdown-it is configured with html:false to block
     raw <script> / inline HTML inside the source.
   -->
+  <!-- eslint-disable-next-line vue/no-v-html -->
   <div class="md-body" v-html="html" />
 </template>
