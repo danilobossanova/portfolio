@@ -2,8 +2,6 @@ import type { Article } from '@core/domain/entities/Article'
 
 type LocalizedArticles = Record<string, readonly Article[]>
 
-/* eslint-disable no-useless-escape */
-
 const ptCustoComplexidade = `## Complexidade cobrada com juros compostos
 
 Complexidade é a maior causa de falência técnica que já vi de perto. Cada

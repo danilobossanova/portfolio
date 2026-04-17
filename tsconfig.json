@@ -6,22 +6,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["./*"],
-      "~/*": ["./*"],
-      "@core/*": ["./core/*"]
-    }
-  },
-  "include": [
-    "core/**/*.ts",
-    "components/**/*.vue",
-    "pages/**/*.vue",
-    "layouts/**/*.vue",
-    "composables/**/*.ts",
-    "plugins/**/*.ts",
-    "tests/**/*.ts",
-    "app.vue",
-    "nuxt.config.ts"
-  ]
+    "forceConsistentCasingInFileNames": true
+  }
 }
